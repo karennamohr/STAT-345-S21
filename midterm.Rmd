@@ -1,0 +1,259 @@
+---
+title: "STAT 345 Midterm Project"
+author: "Karenna Mohr"
+date: "Due April 3"
+output:
+  html_document: default
+  pdf_document: default
+font: 12pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+> "NOBODY KNOWS ANYTHING. Not one person in the entire motion picture field knows for a certainty what’s going to work. Every time out it’s a guess—and, if you’re lucky, an educated one." William Goldman, _Adventures in the Screen Trade_
+
+Each IMDB page records a large amount of information about each movie. We are interested in the following:
+
+   * The average rating of the movie by IMDB users. 
+   * The number of ratings of the movie. 
+   * The year the movie was released. 
+   * The gross revenue of the movie (US).
+   * The budget for the movie.
+   * The movie's title.
+   * The movie’s genre(s). 
+   * The four top-billed actors.
+   * The text of the 25 "most helpful" reviews, as well as their helpfulness (ratio of helpful votes out of total votes.) 
+    
+Note that the first five (and last) variables are numeric, and the genre, title, and reviews are strings. In some cases, some of these variables may be missing for a particular movie.
+
+In some cases, the business information page lists multiple gross revenues, depending on the country, or gross receipts by different dates. In case of ambiguity, we are interested in gross receipts for the US, and want to use the figure for the latest available date. If no gross revenue figure is available for the US, treat the gross revenue as missing.
+
+1. (30 pts) Write code to extract the variables described above from all 1000 movies, and store it in a data frame. For full credit, you should write a function which can extract this information from an arbitrary movie code (or url), and then further code which uses that function and applies it to all 1000 movies. For full credit, your code should avoid loops in favor of vectorized operations and apply (and sapply, lapply, etc., as convenient). Your code should handle missing values appropriately, and should not convert categorical variables into numbers, or numbers into strings, etc. 
+
+```{r}
+library(tidyverse)
+library(rvest)
+
+url01 <- "https://www.imdb.com/search/title/?groups=top_1000&start=1"
+url02 <- "https://www.imdb.com/search/title/?groups=top_1000&start=51"
+url03 <- "https://www.imdb.com/search/title/?groups=top_1000&start=101"
+url04 <- "https://www.imdb.com/search/title/?groups=top_1000&start=151"
+url05 <- "https://www.imdb.com/search/title/?groups=top_1000&start=201"
+url06 <- "https://www.imdb.com/search/title/?groups=top_1000&start=251"
+url07 <- "https://www.imdb.com/search/title/?groups=top_1000&start=301"
+url08 <- "https://www.imdb.com/search/title/?groups=top_1000&start=351"
+url09 <- "https://www.imdb.com/search/title/?groups=top_1000&start=401"
+url10 <- "https://www.imdb.com/search/title/?groups=top_1000&start=451"
+url11 <- "https://www.imdb.com/search/title/?groups=top_1000&start=501"
+url12 <- "https://www.imdb.com/search/title/?groups=top_1000&start=551"
+url13 <- "https://www.imdb.com/search/title/?groups=top_1000&start=601"
+url14 <- "https://www.imdb.com/search/title/?groups=top_1000&start=651"
+url15 <- "https://www.imdb.com/search/title/?groups=top_1000&start=701"
+url16 <- "https://www.imdb.com/search/title/?groups=top_1000&start=751"
+url17 <- "https://www.imdb.com/search/title/?groups=top_1000&start=801"
+url18 <- "https://www.imdb.com/search/title/?groups=top_1000&start=851"
+url19 <- "https://www.imdb.com/search/title/?groups=top_1000&start=901"
+url20 <- "https://www.imdb.com/search/title/?groups=top_1000&start=951"
+```
+
+```{r}
+html01 <- read_html(url01)
+html02 <- read_html(url02)
+html03 <- read_html(url03)
+html04 <- read_html(url04)
+html05 <- read_html(url05)
+html06 <- read_html(url06)
+html07 <- read_html(url07)
+html08 <- read_html(url08)
+html09 <- read_html(url09)
+html10 <- read_html(url10)
+html11 <- read_html(url11)
+html12 <- read_html(url12)
+html13 <- read_html(url13)
+html14 <- read_html(url14)
+html15 <- read_html(url15)
+html16 <- read_html(url16)
+html17 <- read_html(url17)
+html18 <- read_html(url18)
+html19 <- read_html(url19)
+html20 <- read_html(url20)
+```
+
+```{r}
+titles01 <- html_nodes(html01,".lister-item-header a")
+titles02 <- html_nodes(html02,".lister-item-header a")
+titles03 <- html_nodes(html03,".lister-item-header a")
+titles04 <- html_nodes(html04,".lister-item-header a")
+titles05 <- html_nodes(html05,".lister-item-header a")
+titles06 <- html_nodes(html06,".lister-item-header a")
+titles07 <- html_nodes(html07,".lister-item-header a")
+titles08 <- html_nodes(html08,".lister-item-header a")
+titles09 <- html_nodes(html09,".lister-item-header a")
+titles10 <- html_nodes(html10,".lister-item-header a")
+titles11 <- html_nodes(html11,".lister-item-header a")
+titles12 <- html_nodes(html12,".lister-item-header a")
+titles13 <- html_nodes(html13,".lister-item-header a")
+titles14 <- html_nodes(html14,".lister-item-header a")
+titles15 <- html_nodes(html15,".lister-item-header a")
+titles16 <- html_nodes(html16,".lister-item-header a")
+titles17 <- html_nodes(html17,".lister-item-header a")
+titles18 <- html_nodes(html18,".lister-item-header a")
+titles19 <- html_nodes(html19,".lister-item-header a")
+titles20 <- html_nodes(html20,".lister-item-header a")
+```
+
+```{r}
+URL01 <- html_attrs(titles01)
+URL02 <- html_attrs(titles02)
+URL03 <- html_attrs(titles03)
+URL04 <- html_attrs(titles04)
+URL05 <- html_attrs(titles05)
+URL06 <- html_attrs(titles06)
+URL07 <- html_attrs(titles07)
+URL08 <- html_attrs(titles08)
+URL09 <- html_attrs(titles09)
+URL10 <- html_attrs(titles10)
+URL11 <- html_attrs(titles11)
+URL12 <- html_attrs(titles12)
+URL13 <- html_attrs(titles13)
+URL14 <- html_attrs(titles14)
+URL15 <- html_attrs(titles15)
+URL16 <- html_attrs(titles16)
+URL17 <- html_attrs(titles17)
+URL18 <- html_attrs(titles18)
+URL19 <- html_attrs(titles19)
+URL20 <- html_attrs(titles20)
+```
+
+```{r}
+URL01 <- str_replace_all(URL01,"/title/","")
+URL01 <- str_replace_all(URL01, "\\/.*","" )
+URL02 <- str_replace_all(URL02,"/title/","")
+URL02 <- str_replace_all(URL02, "\\/.*","" )
+URL03 <- str_replace_all(URL03,"/title/","")
+URL03 <- str_replace_all(URL03, "\\/.*","" )
+URL04 <- str_replace_all(URL04,"/title/","")
+URL04 <- str_replace_all(URL04, "\\/.*","" )
+URL05 <- str_replace_all(URL05,"/title/","")
+URL05 <- str_replace_all(URL05, "\\/.*","" )
+URL06 <- str_replace_all(URL06,"/title/","")
+URL06 <- str_replace_all(URL06, "\\/.*","" )
+URL07 <- str_replace_all(URL07,"/title/","")
+URL07 <- str_replace_all(URL07, "\\/.*","" )
+URL08 <- str_replace_all(URL08,"/title/","")
+URL08 <- str_replace_all(URL08, "\\/.*","" )
+URL09 <- str_replace_all(URL09,"/title/","")
+URL09 <- str_replace_all(URL09, "\\/.*","" )
+URL10 <- str_replace_all(URL10,"/title/","")
+URL10 <- str_replace_all(URL10, "\\/.*","" )
+URL11 <- str_replace_all(URL11,"/title/","")
+URL11 <- str_replace_all(URL11, "\\/.*","" )
+URL12 <- str_replace_all(URL12,"/title/","")
+URL12 <- str_replace_all(URL12, "\\/.*","" )
+URL13 <- str_replace_all(URL13,"/title/","")
+URL13 <- str_replace_all(URL13, "\\/.*","" )
+URL14 <- str_replace_all(URL14,"/title/","")
+URL14 <- str_replace_all(URL14, "\\/.*","" )
+URL15 <- str_replace_all(URL15,"/title/","")
+URL15 <- str_replace_all(URL15, "\\/.*","" )
+URL16 <- str_replace_all(URL16,"/title/","")
+URL16 <- str_replace_all(URL16, "\\/.*","" )
+URL17 <- str_replace_all(URL17,"/title/","")
+URL17 <- str_replace_all(URL17, "\\/.*","" )
+URL18 <- str_replace_all(URL18,"/title/","")
+URL18 <- str_replace_all(URL18, "\\/.*","" )
+URL19 <- str_replace_all(URL19,"/title/","")
+URL19 <- str_replace_all(URL19, "\\/.*","" )
+URL20 <- str_replace_all(URL20,"/title/","")
+URL20 <- str_replace_all(URL20, "\\/.*","" )
+```
+
+```{r}
+title_link01 = paste("https://www.imdb.com/title/", URL01, sep="")
+title_link02 = paste("https://www.imdb.com/title/", URL02, sep="")
+title_link03 = paste("https://www.imdb.com/title/", URL03, sep="")
+title_link04 = paste("https://www.imdb.com/title/", URL04, sep="")
+title_link05 = paste("https://www.imdb.com/title/", URL05, sep="")
+title_link06 = paste("https://www.imdb.com/title/", URL06, sep="")
+title_link07 = paste("https://www.imdb.com/title/", URL07, sep="")
+title_link08 = paste("https://www.imdb.com/title/", URL08, sep="")
+title_link09 = paste("https://www.imdb.com/title/", URL09, sep="")
+title_link10 = paste("https://www.imdb.com/title/", URL10, sep="")
+title_link11 = paste("https://www.imdb.com/title/", URL11, sep="")
+title_link12 = paste("https://www.imdb.com/title/", URL12, sep="")
+title_link13 = paste("https://www.imdb.com/title/", URL13, sep="")
+title_link14 = paste("https://www.imdb.com/title/", URL14, sep="")
+title_link15 = paste("https://www.imdb.com/title/", URL15, sep="")
+title_link16 = paste("https://www.imdb.com/title/", URL16, sep="")
+title_link17 = paste("https://www.imdb.com/title/", URL17, sep="")
+title_link18 = paste("https://www.imdb.com/title/", URL18, sep="")
+title_link19 = paste("https://www.imdb.com/title/", URL19, sep="")
+title_link20 = paste("https://www.imdb.com/title/", URL20, sep="")
+```
+
+```{r}
+movie <- data.frame(imdb_urls=c(title_link01, title_link02, title_link03, title_link04, title_link05, title_link06,
+                                title_link07, title_link08, title_link09, title_link10, title_link11, title_link12,
+                                title_link13, title_link14, title_link15, title_link16, title_link17, title_link18,
+                                title_link19, title_link20))
+```
+
+```{r}
+movie_url <- paste(movie) ##Needs a lot of work done
+```
+
+
+_Victory conditions:_ You have a data frame with 1000 rows and columns that contain the first six variables, as well as each genre, review, and review helpfulness scores in appropriately formatted columns. Columns have short but clear names. Most rows have no missing values; the few rows where there are missing values have NA in the appropriate places. 
+
+_Mercy condition:_ If you are struggling to get these data in a reasonable form, a compiled, reasonably clean and accurate version for either the URL list or movie data will be added to Canvas called `imdb_urls.csv` and `moviedata.Rdata` respectively.  Use them to answer the following parts, if necessary. Your work in this part, even if not complete, can be scored for partial credit.
+```{r}
+library(readr)
+moviedata <- read_csv("moviedata.csv")  ##Temporary file until solved 
+```
+
+2. (30 pts) Code to plot the distributions of the first five variables listed above. Comment on the features each plot presents -- what information is gained by seeing these graphics?
+
+```{r}
+library(ggplot2)
+library(ggthemes)
+
+ggplot(moviedata)+geom_histogram(aes(x=rating, fill=as.factor(rating)), binwidth = 0.1)+ggtitle("Movie Rating Frequency")+ylab("Number of Movies")+xlab("Rating (out of 10)")+scale_fill_pander()+theme(legend.position = "None")
+
+ggplot(moviedata)+ geom_freqpoly(aes(x=num_ratings), binwidth=.01)+ggtitle("Number Of Ratings For Top 1000 Movies")+scale_x_log10()+ylab("Frequency of Ratings")+xlab("Total Number of Ratings (log10 Scale)")+theme_few()
+
+ggplot(moviedata)+geom_histogram(aes(x=year,fill=as.factor(year)), binwidth = 1)+ggtitle("Frequency Of Years Top 1000 Movies Were Released")+ ylab("Number of Movies Released")+xlab("Year")+scale_fill_pander()+theme(legend.position = "None")
+
+ggplot(na.omit(moviedata))+geom_freqpoly(aes(x=gross), binwidth=0.1)+ggtitle("Gross Income (US) For Top 1000 Movies") +scale_x_log10() +ylab("Number of Movies")+xlab("Gross Income from the US (log10 Scale)")+theme_few()
+
+ggplot(na.omit(moviedata))+geom_freqpoly(aes(x=budget), binwidth=0.1)+ggtitle("Budget For Top 1000 Movies")+scale_x_log10() +ylab("Number of Movies")+xlab("Budget For Each Movie (log10 Scale)")+theme_few()
+```
+Plot 1: The distribution is right-skewed with the most frequent being around 7.7-7.8. This shows that on a scale from 0-10, most users will give movies good scores compared to bad. The range of this histogram is from 7.6-9.3. This, for the most part, shows how hard it is for a movie to get a near perfect rating as there will never be a movie that every single person loves.
+Plot 2: This distribution is very scattered but there seems to be a negative trend. If the x scale was distributed equally, it would show the majority of the frequency towards the left side making the distribution right-skewed. Thus, it shows that most movies get a total of 30,000 to 100,000 number of ratings. The frequency of higher totals trend downwards from there.
+Plot 3: This distribution is skewed to the left as movies that have reached the top 1000 are from more current years. The range is from 1920-2021. The year with the most amount of Top 1000 movies released was in 2004. 
+Plot 4: The distribution is skewed left as it shows that the majority of movie's gross income from the US ranged from 50,000,000 to 100,000,000. 
+Plot 5: The distribution appears normal but slightly skewed to the left, however knowing the scale for the x variable, it shows that the distribution is more skewed to the left more than what we think. Most budgets for the Top 1000 movies are within the range 10,000,000 and 100,000,000
+
+3. (20 pts) Complete a sentiment analyses on the 25 most helpful reviews for each movie. The choice of lexicon is up to you, but explain your reasons why your choice is the most reasonable/appropriate option. Add a summary of this information to your original data frame.
+```{r}
+reviews <- moviedata[,c("Review_1", "Review_2", "Review_3", "Review_4", "Review_5", "Review_6", "Review_7", "Review_8", "Review_9", "Review_10", "Review_11",
+            "Review_12", "Review_13", "Review_14", "Review_15", "Review_16", "Review_17", "Review_18", "Review_19", "Review_20", "Review_21",
+            "Review_22", "Review_23", "Review_24", "Review_25")]
+
+```
+
+4. (20 pts) Variable Relationships. Create one plot that displays the relationship (or lack thereof) between any of the movie variables. Your plot should be appropriately labeled, titled, colored, etc. Your plot should display at minimum 3 variables. A plot with more variables included will be scored more favorably (as long as the plot is reasonable and legible). Reviews and helpfulness/sentiment scores are considered aggregate variables (e.g., 25 helpfulness scores will be considered a single variable). Some questions that you might consider when creating your plot are below, though you are not limited to these questions. 
+   - Is there any evidence of a relationship between review helpfulness and review sentiment? 
+   - Do the review scores (from the most helpful reviews) generally agree with the overall IMDB average rating?
+   - Is there evidence of a relationship between average IMDB rating and a movie's gross? Does release year seem to have an effect on this relationship?
+   - Is there evidence of a relationship between a movie's budget and a movie's gross? Does release year seem to have an effect on this relationship? 
+   - Do any actors have an effect (positive or negative) on the relationship between budget, gross, or average IMDB rating? Is this pattern common across any genres?
+
+  
+  
+  
+  
+  
+  
+
+
