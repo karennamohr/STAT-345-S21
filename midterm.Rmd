@@ -249,7 +249,7 @@ reviews <- moviedata[,c("Review_1", "Review_2", "Review_3", "Review_4", "Review_
    - Is there evidence of a relationship between a movie's budget and a movie's gross? Does release year seem to have an effect on this relationship? 
    - Do any actors have an effect (positive or negative) on the relationship between budget, gross, or average IMDB rating? Is this pattern common across any genres?
 ```{r}
-ggplot(moviedata)
+ggplot(moviedata)+geom_freqpoly(aes(x=rating))
 ```
 
   
